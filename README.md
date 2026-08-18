@@ -35,14 +35,14 @@ The ELF lands at `examples/rust/blinky/target/riscv64gc-unknown-none-elf/release
 
 ## Quick start (Renode fidelity)
 
-Needs Renode on `PATH` (portable .NET package is fine):
-
 ```bash
-./tests/fidelity/run-blinky.sh
+./scripts/build-blinky.sh
+./scripts/fetch-host-tools.sh    # pinned Renode 1.16.1 + xPack GDB
+./tests/fidelity/run-live.sh     # 5 threads, rust_main, LED freeze
 ```
 
-That script loads `platforms/polarfire/playground.resc`, starts the GDB stub,
-and prints the hart / LED contract. It does not require the website.
+Tools land in `~/.cache/hartlab/tools`, not in git. Results:
+`docs/spikes/phase0-renode.md`.
 
 ## Quick start (host crates)
 

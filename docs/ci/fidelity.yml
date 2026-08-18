@@ -1,0 +1,71 @@
+# Phase 0 gate. Do not add website or extra SoCs until this stays green.
+name: fidelity
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fidelity-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-renode:
+    name: Live Renode + GDB (ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: riscv64gc-unknown-none-elf
+
+      - name: Build teaching blinky
+        run: ./scripts/build-blinky.sh
+
+      - name: Fetch pinned Renode and RISC-V GDB
+        run: ./scripts/fetch-host-tools.sh
+
+      - name: Live spike
+        run: ./tests/fidelity/run-live.sh
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fidelity-host
+          path: /tmp/hartlab-fidelity/
+          if-no-files-found: ignore
+
+  docker-lockdown:
+    name: Docker cap-drop ALL
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: riscv64gc-unknown-none-elf
+
+      - name: Build teaching blinky
+        run: ./scripts/build-blinky.sh
+
+      - name: Build fidelity image
+        run: docker build -f infra/docker/fidelity.Dockerfile -t hartlab-fidelity:ci .
+
+      - name: Run under lock-down flags
+        run: ./tests/fidelity/run-docker.sh hartlab-fidelity:ci
+
+      - name: Record RSS
+        if: always()
+        run: |
+          echo "Image size:"
+          docker image inspect hartlab-fidelity:ci --format '{{.Size}}'
+          echo "Last container (if any):"
+          docker ps -a --filter ancestor=hartlab-fidelity:ci --format '{{.ID}} {{.Status}}' | head

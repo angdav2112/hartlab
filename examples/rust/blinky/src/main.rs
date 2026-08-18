@@ -92,6 +92,7 @@ fn set_led(pin: u32, on: bool) {
 }
 
 /// Application entry on U54_1. GDB can break here.
+#[inline(never)]
 #[no_mangle]
 pub extern "C" fn rust_main() -> ! {
     enable_gpio2();

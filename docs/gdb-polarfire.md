@@ -1,6 +1,16 @@
 # GDB on the PolarFire playground
 
-Renode exposes one GDB stub for all five RV64 harts:
+Renode 1.16 will **not** put e51 (`rv64imac`) and the U54s (`rv64gc`) on
+one stub unless you ask:
+
+```
+machine StartGdbServer 3333 false cpuCluster="all"
+```
+
+`continue` in GDB does **not** start virtual time when `autostartEmulation`
+is false. Issue `monitor start` first (the fidelity runner does this).
+
+Then:
 
 ```
 (gdb) target remote :3333

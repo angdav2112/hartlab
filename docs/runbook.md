@@ -5,8 +5,12 @@
 ```bash
 cargo test --workspace
 ./scripts/build-blinky.sh
-./tests/fidelity/run-blinky.sh   # needs Renode on PATH
-cargo run -p hartlab-control     # :8080
+./scripts/fetch-host-tools.sh    # Renode + GDB -> ~/.cache/hartlab/tools
+./tests/fidelity/run-live.sh     # Phase 0 gate
+# Docker lock-down (needs Docker Engine):
+#   docker build -f infra/docker/fidelity.Dockerfile -t hartlab-fidelity:dev .
+#   ./tests/fidelity/run-docker.sh
+cargo run -p hartlab-control     # 127.0.0.1:8080 stub only
 ```
 
 ## Prod (U3 — not live yet)
