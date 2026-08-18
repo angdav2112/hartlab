@@ -4,9 +4,9 @@ Browser playground for PolarFire SoC GDB practice. Users load curated or
 uploaded RISC-V firmware onto a Renode PolarFire model, debug it with real
 GDB, and watch LEDs and UART update live.
 
-**Status:** Phase 0 — platform pack + firmware examples + host control-plane
-skeleton. Isolation is hardened Docker per session. Firecracker / dedicated
-KVM hosts are out of scope.
+**Status:** Phase 0 fidelity spike. PolarFire pack + Rust teaching blinky
+are real. Control/agent/Docker are stubs — isolation is **specified**, not
+demonstrated. Firecracker / dedicated KVM hosts are out of scope.
 
 **Vision and plan** (source of truth): [`docs/VISION.md`](docs/VISION.md) and
 [`docs/ROADMAP.md`](docs/ROADMAP.md). Index: [`docs/README.md`](docs/README.md).

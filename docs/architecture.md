@@ -32,5 +32,7 @@ GDB threads. Application firmware runs on **U54_1** (`mhartid == 1`).
 
 ## Status
 
-Phase 0 in this repo: platform pack, Rust blinky, ELF accept list, control
-and agent stubs. Docker session image and playground SPA come next.
+Phase 0 in this repo: platform pack and a teaching Rust blinky. Control,
+agent, and the session Dockerfile are **stubs** — they do not run a lab.
+Next concrete win is a live Renode recording, not more Axum. See
+[`ROADMAP.md`](ROADMAP.md).

@@ -10,21 +10,23 @@ Status key: `[x]` done in-tree, `[ ]` not done.
 ## Phase 0 — Fidelity spike (in progress)
 
 **Goal:** PolarFire + GDB + LEDs work, and Renode survives the Docker flags.
+Control/agent crates in this repo are **placeholders**, not spike progress
+(see [`spikes/2026-08-18-cursor-review.md`](spikes/2026-08-18-cursor-review.md)).
 
 - [x] Pin a workspace and PolarFire playground overlay (`platforms/polarfire/`).
 - [x] Four LEDs on GPIO2 pins 16–19 in `playground.repl`.
 - [x] Rust `blinky` ELF at `0x80000000`, U54_1 only (`./scripts/build-blinky.sh`).
+- [x] Blinky is a teaching ELF: `ENTRY(_start)`, `debug = 2`, no LTO.
 - [x] e51-PC-copy + park U54_2–4 documented in `playground.resc` and
       `gdb-polarfire.md`.
-- [x] Ada blinky source on the same pins (`examples/ada/blinky/`; prebuilt ELF
-      still pending if Alire RV64 is unavailable).
-- [x] IronPython hook writes JSON lines (`playground.py`).
-- [x] Host ELF allowlist + GDB denylist (`crates/protocol`, tests passing).
-- [x] Control / agent stubs (`apps/control`, `apps/agent`).
-- [ ] Confirm Monitor `LED state changed` against a live Renode.
+- [ ] Ada gallery ELF — source exhibit only; needs a prebuilt RV64 binary.
+- [x] IronPython hook writes JSON lines and **fails loudly** if LEDs do not bind.
+- [x] Host ELF allowlist (PT_LOAD at `0x80000000`) + default-deny GDB filter.
+- [ ] Confirm `StateChanged` / LED JSON against a **live** Renode.
 - [ ] Host GDB: `info threads` == 5, break on `rust_main`, LED freezes on halt.
 - [ ] Same blinky inside Docker: `--network=none --read-only --cap-drop ALL
-      --memory 1536m`. Record RSS, boot time, any missing capability.
+      --memory 1536m` **with Renode+GDB actually in the image**. Record RSS.
+- [ ] DDR RSS spike — shrink playground overlay if 2 GB mapping is real.
 
 **Exit:** a 2-minute recording for the landing page, plus a note “Renode works
 with cap-drop ALL: yes/no”. If multi-hart GDB or GPIO2 LEDs fail, **stop**
@@ -98,17 +100,18 @@ production isolation model, just on localhost.
 ## Implementation order (PRs)
 
 1. ~~Repo skeleton + PolarFire pack + Rust blinky + fidelity script.~~ (landed)
-2. ~~Ada blinky source.~~ (landed; prebuilt ELF still open)
-3. Session Dockerfile + “blinky in a locked-down container”.
-4. Agent protocol + fake backend tests.
-5. Control session API + bollard + reaper.
-6. Web playground talking to local Axum.
-7. UART example + source viewer.
-8. Hart example + hart selector.
-9. Upload path + validator corpus.
-10. Vercel landing + Caddy + Cloud runbook.
-11. Exercises / buggy-overflow.
-12. Viz polish + optional gVisor.
+2. Ada prebuilt ELF (source exhibit is not enough).
+3. **Live Renode recording + cap-drop ALL note** (Phase 0 exit — do this next).
+4. Session Dockerfile that actually runs Renode + GDB + agent.
+5. Agent protocol + fake backend tests.
+6. Control session API + bollard + reaper + WS mux.
+7. Web playground talking to local Axum.
+8. UART example + source viewer.
+9. Hart example + hart selector.
+10. Upload path + validator corpus.
+11. Vercel landing + Caddy + Cloud runbook.
+12. Exercises / buggy-overflow.
+13. Viz polish + optional gVisor.
 
 Until there is a production URL, land on `main`. If this becomes a Vesperforge
 public site, switch to the Crownfall/Hearth rule: `development` first, then

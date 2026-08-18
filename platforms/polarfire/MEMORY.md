@@ -77,4 +77,5 @@ cannot make sense of — still fine to busy-wait on `mtime`.
 - ELFCLASS64, `EM_RISCV` (243), no `PT_INTERP`
 - Linked at `0x80000000` (or at least with a loadable segment there)
 - Size ≤ 4 MiB
-- Prefer DWARF so the source pane can highlight
+- Prefer DWARF so the source pane can highlight. Curated Rust blinky is
+  built with `debug = 2` and no LTO for that reason.

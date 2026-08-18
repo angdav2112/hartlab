@@ -1,0 +1,40 @@
+{
+  "comment": "HartLab session profile. Start from allow, deny the syscalls the vision lists. Iterate with strace once Renode runs under Docker. Not a substitute for --network=none / cap-drop ALL.",
+  "defaultAction": "SCMP_ACT_ALLOW",
+  "archMap": [
+    {
+      "architecture": "SCMP_ARCH_X86_64",
+      "subArchitectures": ["SCMP_ARCH_X86", "SCMP_ARCH_X32"]
+    },
+    {
+      "architecture": "SCMP_ARCH_AARCH64",
+      "subArchitectures": ["SCMP_ARCH_ARM"]
+    }
+  ],
+  "syscalls": [
+    {
+      "names": [
+        "bpf",
+        "perf_event_open",
+        "kexec_load",
+        "kexec_file_load",
+        "reboot",
+        "swapon",
+        "swapoff",
+        "mount",
+        "umount2",
+        "pivot_root",
+        "unshare",
+        "setns",
+        "userfaultfd",
+        "init_module",
+        "finit_module",
+        "delete_module",
+        "lookup_dcookie",
+        "acct",
+        "swapon"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    }
+  ]
+}

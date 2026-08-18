@@ -1,5 +1,7 @@
+# Session-image smoke only. hartlab-control is a host cargo binary (bind
+# 127.0.0.1). Do not publish GDB, Monitor, or docker.sock from this file.
 services:
-  control:
+  session:
     build:
       context: ../..
       dockerfile: infra/docker/session.Dockerfile
@@ -7,7 +9,9 @@ services:
     network_mode: none
     read_only: true
     cap_drop: [ALL]
-    security_opt: ["no-new-privileges:true"]
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=infra/docker/seccomp-session.json
     pids_limit: 64
     mem_limit: 1536m
     cpus: 1.0

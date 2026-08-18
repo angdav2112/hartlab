@@ -1,4 +1,12 @@
-# Ada blinky (same contract as the Rust example)
+# Ada blinky — source exhibit, not a gallery ELF
+
+This is a language-parallel **sketch**. It does not import `Interfaces`,
+has no crt0 / hart-park, and has no linker script. Do **not** check it
+off as a second curated ELF until there is a prebuilt `riscv64` binary
+that `validate_elf` accepts.
+
+Same intended contract as `examples/rust/blinky` once that ELF exists
+(`platforms/polarfire/MEMORY.md`).
 
 MMIO map matches `platforms/polarfire/MEMORY.md`:
 

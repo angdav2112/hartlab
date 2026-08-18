@@ -1,4 +1,6 @@
 /* PolarFire playground: DDR at 0x80000000. Keep in sync with platforms/polarfire/MEMORY.md */
+ENTRY(_start)
+
 MEMORY
 {
     RAM : ORIGIN = 0x80000000, LENGTH = 64K
@@ -33,10 +35,7 @@ SECTIONS
         _bss_end = .;
     } > RAM
 
-    /DISCARD/ : {
-        *(.eh_frame)
-        *(.eh_frame_hdr)
-    }
+    /* Keep DWARF. Do not discard .debug_* — source highlight depends on it. */
 }
 
 PROVIDE(_stack_end = _stack_end);

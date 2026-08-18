@@ -1,11 +1,9 @@
-//! Session-container agent. Speaks one JSON object per line on stdin/stdout
-//! (or a Unix socket later). Does not exec a shell.
+//! Session-container agent stub. JSON lines on stdin/stdout. No shell.
 
 use hartlab_protocol::{
     decode_host_line, encode_line, gdb_command_denied, AgentToHost, HostToAgent,
 };
 use std::io::{self, BufRead, Write};
-use std::path::Path;
 
 fn main() {
     tracing_subscriber::fmt()
@@ -25,10 +23,7 @@ fn main() {
             continue;
         }
         match decode_host_line(&line) {
-            Ok(HostToAgent::Shutdown) => {
-                emit(&mut stdout, &AgentToHost::Ready);
-                break;
-            }
+            Ok(HostToAgent::Shutdown) => break,
             Ok(HostToAgent::Reset) | Ok(HostToAgent::Start { .. }) => {
                 emit(&mut stdout, &AgentToHost::Ready);
             }
@@ -52,8 +47,6 @@ fn main() {
             ),
         }
     }
-
-    let _ = Path::new("/run/agent");
 }
 
 fn emit(out: &mut impl Write, msg: &AgentToHost) {
