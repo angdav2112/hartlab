@@ -1,4 +1,7 @@
-# HartLab architecture
+# HartLab architecture (as-built)
+
+Long-term shape, isolation flags, and MVP definition of done:
+[`VISION.md`](VISION.md). Phases and leftover work: [`ROADMAP.md`](ROADMAP.md).
 
 HartLab is a browser playground for PolarFire SoC GDB practice.
 
