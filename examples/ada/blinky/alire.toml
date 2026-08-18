@@ -1,0 +1,8 @@
+name = "blinky"
+description = "HartLab PolarFire GPIO2 blinky (Ada)"
+version = "0.1.0-dev"
+licenses = "MIT"
+authors = ["HartLab"]
+maintainers = ["HartLab <dev@localhost>"]
+maintainers-logins = ["angdav2112"]
+executables = ["blinky"]

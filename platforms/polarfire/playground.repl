@@ -1,0 +1,14 @@
+// HartLab PolarFire playground overlay.
+// Stock SoC from Renode; four Icicle LEDs on GPIO2 pins 16-19.
+using "platforms/cpus/polarfire-soc.repl"
+
+led1: Miscellaneous.LED @ gpio2
+led2: Miscellaneous.LED @ gpio2
+led3: Miscellaneous.LED @ gpio2
+led4: Miscellaneous.LED @ gpio2
+
+gpio2:
+    16 -> led1@0
+    17 -> led2@0
+    18 -> led3@0
+    19 -> led4@0

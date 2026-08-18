@@ -1,0 +1,28 @@
+:name: HartLab PolarFire playground
+:description: Bare-metal PolarFire with Icicle LED overlay and multi-hart GDB stub
+
+$ROOT?=.
+$bin?=@$ROOT/examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky
+
+using sysbus
+mach create "icicle"
+
+machine LoadPlatformDescription @$ROOT/platforms/polarfire/playground.repl
+include @$ROOT/platforms/polarfire/playground.py
+
+# Do not autostart: GDB continue starts virtual time (SoftConsole-like).
+machine StartGdbServer 3333 false
+
+macro reset
+"""
+    sysbus LoadELF $bin
+    # SoftConsole/GDB load only programs e51; copy PC onto the app hart.
+    u54_1 PC `e51 PC`
+    u54_2 IsHalted true
+    u54_3 IsHalted true
+    u54_4 IsHalted true
+"""
+runMacro $reset
+
+echo "HartLab PolarFire ready. GDB: target remote :3333"
+echo "Select U54_1 (usually GDB thread 2), then continue."

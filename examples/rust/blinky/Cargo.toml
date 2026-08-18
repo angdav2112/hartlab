@@ -1,0 +1,17 @@
+[package]
+name = "blinky"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "MIT"
+description = "PolarFire Icicle LED blinky for HartLab (U54_1, GPIO2 16-19)"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = false
+
+[profile.dev]
+panic = "abort"

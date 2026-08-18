@@ -1,0 +1,16 @@
+[Unit]
+Description=HartLab session control plane
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=hartlab
+WorkingDirectory=/opt/hartlab
+ExecStart=/opt/hartlab/hartlab-control
+Restart=on-failure
+RestartSec=2
+Environment=RUST_LOG=hartlab_control=info
+
+[Install]
+WantedBy=multi-user.target

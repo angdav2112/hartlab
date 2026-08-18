@@ -1,0 +1,14 @@
+services:
+  control:
+    build:
+      context: ../..
+      dockerfile: infra/docker/session.Dockerfile
+    image: hartlab-session:dev
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 1536m
+    cpus: 1.0
+    user: "10000:10000"

@@ -1,0 +1,14 @@
+/target
+**/*.rs.bk
+.idea/
+.vscode/
+.DS_Store
+*.swp
+/examples/rust/*/target
+/apps/web/node_modules
+/apps/web/.next
+/apps/web/dist
+/var
+.env
+.env.*
+!/.env.example
