@@ -53,7 +53,7 @@ def _bind_led(path, index):
         raise Exception("HartLab: cannot resolve LED %s (%s)" % (path, ex))
     if not hasattr(led, "StateChanged"):
         raise Exception(
-            "HartLab: %s has no StateChanged — GPIO2 LED overlay did not attach" % path
+            "HartLab: %s has no StateChanged (GPIO2 LED overlay did not attach)" % path
         )
     def _handler(sender, state, idx=index):
         _on_led(idx, state)
