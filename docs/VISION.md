@@ -3,7 +3,8 @@
 **Product:** Browser playground for authentic PolarFire SoC GDB practice, with
 live board visualization and no local install.
 
-**Repo:** [angdav2112/hartlab](https://github.com/angdav2112/hartlab)
+**Repo:** [angdav2112/hartlab](https://github.com/angdav2112/hartlab).
+PRs → `development`; `main` is production. See [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 **Operator model:** One experienced developer. Marketing/docs on Vercel.
 Interactive sessions on a **Hetzner Cloud VPS** (no dedicated/bare metal, no
@@ -16,7 +17,8 @@ Renode as the execution engine.
 userland sandbox is wanted). Firecracker / dedicated servers are out of scope
 unless we reopen that decision.
 
-How we get there: [`ROADMAP.md`](ROADMAP.md). How it is built today:
+How we get there: [`ROADMAP.md`](ROADMAP.md) (usable public cut first:
+https://hartlab.vesperforge.org). How it is built today:
 [`architecture.md`](architecture.md).
 
 ---
@@ -281,8 +283,8 @@ Until those eight are true, do not add a second SoC.
 
 ## Open questions (defaults)
 
-1. **Hostnames** — `hartlab.vesperforge.org` (site) + `play.vesperforge.org`
-   (session host). Default: yes.
+1. **Hostnames** — `hartlab.vesperforge.org` (Vercel site) +
+   `play.hartlab.vesperforge.org` (session host). **Locked.**
 2. **Launch** — invite-only until ~20 clean external sessions. Default: yes.
 3. **Auth** — anonymous + 1 session / IP for MVP. Login later.
 4. **Cloud size** — 8 vCPU / 16 GB until RSS numbers say otherwise.

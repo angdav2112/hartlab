@@ -1,3 +1,5 @@
-play.vesperforge.org {
+# Session API / WebSocket only. The public product URL is
+# https://hartlab.vesperforge.org (Vercel).
+play.hartlab.vesperforge.org {
     reverse_proxy 127.0.0.1:8080
 }

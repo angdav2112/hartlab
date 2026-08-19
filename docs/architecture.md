@@ -33,6 +33,7 @@ GDB threads. Application firmware runs on **U54_1** (`mhartid == 1`).
 ## Status
 
 Phase 0 in this repo: platform pack and a teaching Rust blinky. Control,
-agent, and the session Dockerfile are **stubs** — they do not run a lab.
-Next concrete win is a live Renode recording, not more Axum. See
-[`ROADMAP.md`](ROADMAP.md).
+agent, and the session Dockerfile are **stubs**. Next work is the usable
+public cut in [`ROADMAP.md`](ROADMAP.md): isolation gate → real session →
+SPA → https://hartlab.vesperforge.org. Do not grow the website until
+`cap-drop ALL` is proven.
