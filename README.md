@@ -5,12 +5,16 @@ uploaded RISC-V firmware onto a Renode PolarFire model, debug it with real
 GDB, and watch LEDs and UART update live.
 
 **Status:** Phase 0. PolarFire pack + teaching blinky are real.
-Control/agent/Docker are stubs. Public URL is **not** live yet.
+Control/agent/Docker are stubs. https://hartlab.vesperforge.org timed out /
+does not resolve. Local run only.
 
 **Plan (do not add another):** [`docs/VISION.md`](docs/VISION.md) (product) +
 [`docs/ROADMAP.md`](docs/ROADMAP.md) (usable cut for
 https://hartlab.vesperforge.org). Index: [`docs/README.md`](docs/README.md).
-Branches: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+**Branches:** PRs → `development` (default). Promote `development` → `main`
+after smoke. Never target `main` first. Details:
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Layout
 
