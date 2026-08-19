@@ -1,9 +1,83 @@
 # HartLab — roadmap
 
 Source of truth for *what we build next*. Product intent lives in
-[`VISION.md`](VISION.md).
+[`VISION.md`](VISION.md). Do not add a second vision/plan file.
 
 Status key: `[x]` done in-tree, `[ ]` not done.
+
+---
+
+## Usable public site — https://hartlab.vesperforge.org
+
+This is the near-term program. It is a **cut** of Phases 0–2, not a new
+product. Full 8-point MVP in the vision (UART gallery, ELF upload, Ada
+binary) comes **after** this URL is real.
+
+### What “usable” means
+
+A stranger with an invite opens **https://hartlab.vesperforge.org**, clicks
+Launch, and debugs the curated **Rust blinky** on PolarFire:
+
+1. Landing + Launch (no account).
+2. Four LEDs; LED1 blinks; graphic freezes on halt.
+3. Toolbar: Continue, Step, Pause / Reset Halt.
+4. Source line highlights on `rust_main` (DWARF is already in the teaching ELF).
+5. Toggleable GDB terminal (`info threads` shows five harts; `thread 2` is U54_1).
+6. 15 min TTL / tab close destroys the container (`docker ps` clean).
+7. Visitor B cannot attach to visitor A’s session.
+
+**Not in this cut:** Ada gallery ELF, UART example, custom ELF upload,
+gVisor, accounts, a second SoC, pixel-perfect Icicle art.
+
+### Hostnames (locked)
+
+| Host | Where | Role |
+|------|--------|------|
+| `hartlab.vesperforge.org` | Vercel | Site + playground SPA |
+| `play.hartlab.vesperforge.org` | Hetzner Cloud + Caddy | Session API + WebSocket only |
+
+The browser never talks to Renode or GDB. Both names are Vesperforge DNS.
+
+### Gap from this tree
+
+| Have | Missing for the URL |
+|------|---------------------|
+| PolarFire overlay, teaching blinky, ELF allowlist, GDB denylist | Session image that **runs** Renode + GDB + agent |
+| Live host spike on a Mac ([PR #1](https://github.com/angdav2112/hartlab/pull/1)) | **`cap-drop ALL` proven** (CI or a Linux box with Docker) |
+| Control/agent **stubs** (no container, no `/ws`) | Real `POST /v1/sessions`, WS mux, reaper, `bollard` |
+| `apps/web` placeholder | Landing + playground SPA |
+| Draft Caddy/systemd | Cloud VPS, DNS, Vercel project, invite list |
+
+Do **not** point the domain at a stub. Isolation gate first.
+
+### Sequence (one operator)
+
+**U0 — Isolation gate (days)**  
+Bake Renode + GDB + agent into `infra/docker/fidelity.Dockerfile` /
+`session.Dockerfile`. `./tests/fidelity/run-docker.sh` green (GitHub
+Actions on `ubuntu-latest`, or any Linux Docker host). Record RSS. If
+Renode needs a capability, grant that one and write it down. If DDR
+mapping is huge, shrink the playground `.repl` (keep `0x80000000`).
+
+**U1 — Real session, localhost only (1–2 weeks)**  
+Agent starts Renode + GDB MI, `monitor start`, streams LED JSON. Control
+creates one container, proxies one WSS (`gdb` + `hw`), reaps on TTL.
+Integration test: `ready` → continue → LED `true` → halt → freeze →
+`docker rm`. No public bind (`127.0.0.1`).
+
+**U2 — Browser (1–2 weeks, after U1 talks JSON)**  
+`apps/web` on Vercel: landing (“Launch Playground”), SVG board, toolbar,
+xterm.js, source pane. Talks only to `play.hartlab.vesperforge.org`.
+Preview URL is enough until DNS.
+
+**U3 — Domain (few days, overlaps U2)**  
+Hetzner Cloud ~8 vCPU / 16 GB. Docker Engine, Caddy, `hartlab.service`.
+DNS: `hartlab` → Vercel, `play.hartlab` → VPS. Pin session image digest.
+`max_concurrent = 4`, 1 session / IP, invite-only (shared link or IP
+allowlist). Runbook: `docker ps --filter label=app=hartlab`.
+
+**Stop.** Invite ~20 external sessions. Then UART, upload, Ada ELF, polish
+(Phases 3–4). Not before.
 
 ---
 
@@ -50,14 +124,14 @@ production isolation model, just on localhost.
 
 ## Phase 2 — Public site on Hetzner Cloud (~2 weeks)
 
-**Goal:** same Docker runner, now on a Cloud VPS + Vercel.
+**Goal:** U3 above. Same Docker runner, on Cloud + Vercel.
 
 - [ ] Provision ~8 vCPU / 16 GB. Docker, Caddy, `hartlab.service`.
 - [ ] Image from GHCR, pin digest.
-- [ ] `play.vesperforge.org` + Vercel landing (Launch Playground).
-- [ ] Gallery + GDB cheatsheet + hart model + ELF rules.
-- [ ] Hard cap 4–6 sessions; “lab is full”.
-- [ ] Invite-only first week, then open.
+- [ ] `hartlab.vesperforge.org` (Vercel) + `play.hartlab.vesperforge.org` (VPS).
+- [ ] Launch page + blinky only (full gallery after the usable cut).
+- [ ] Hard cap 4 sessions; “lab is full”.
+- [ ] Invite-only until ~20 clean external sessions.
 - [ ] Reaper + disk checks in the runbook.
 
 ---
@@ -99,23 +173,22 @@ production isolation model, just on localhost.
 
 ## Implementation order (PRs)
 
-1. ~~Repo skeleton + PolarFire pack + Rust blinky + fidelity script.~~ (landed)
-2. Ada prebuilt ELF (source exhibit is not enough).
-3. **Live Renode recording + cap-drop ALL note** (Phase 0 exit — do this next).
-4. Session Dockerfile that actually runs Renode + GDB + agent.
-5. Agent protocol + fake backend tests.
-6. Control session API + bollard + reaper + WS mux.
-7. Web playground talking to local Axum.
-8. UART example + source viewer.
-9. Hart example + hart selector.
-10. Upload path + validator corpus.
-11. Vercel landing + Caddy + Cloud runbook.
-12. Exercises / buggy-overflow.
-13. Viz polish + optional gVisor.
+Toward **hartlab.vesperforge.org** (usable cut). Feature PRs → `development`.
 
-Until there is a production URL, land on `main`. If this becomes a Vesperforge
-public site, switch to the Crownfall/Hearth rule: `development` first, then
-`main`.
+1. ~~Repo skeleton + PolarFire pack + Rust blinky.~~ (landed)
+2. ~~Host fidelity notes + protocol hardening.~~ (landed; live Renode on PR #1)
+3. **U0** — Session/fidelity image with Renode+GDB; `run-docker.sh` green.
+4. **U1** — Agent starts Renode/GDB; control + bollard + reaper + WS.
+5. **U2** — `apps/web` landing + blinky playground (Vercel preview).
+6. **U3** — DNS + Caddy + VPS; invite-only `hartlab.vesperforge.org`.
+7. UART example + source/UART pane (full MVP #5).
+8. ELF upload + validator corpus (full MVP #6).
+9. Ada prebuilt gallery ELF.
+10. Hart overview UI (terminal already has `info threads`).
+11. Exercises / buggy-overflow / viz polish.
+
+Branch flow: [`CONTRIBUTING.md`](../CONTRIBUTING.md). Feature → `development`
+→ smoke → `main`. Never open a feature PR against `main`.
 
 ---
 
@@ -138,9 +211,11 @@ public site, switch to the Crownfall/Hearth rule: `development` first, then
 
 ---
 
-## Ops (when Phase 2 exists)
+## Ops (when U3 exists)
 
 - systemd: `hartlab.service`, `caddy`, `docker`.
 - Daily: `docker ps --filter label=app=hartlab` matches live sessions only.
 - Cost: Vercel + one Cloud VPS (~€15–40/mo). No dedicated server.
 - Capacity: raise the box or add a second VPS. Not k8s.
+- Site: https://hartlab.vesperforge.org — session host:
+  `play.hartlab.vesperforge.org` (not published as a product URL).
