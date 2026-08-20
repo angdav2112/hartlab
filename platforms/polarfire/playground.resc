@@ -1,17 +1,19 @@
 :name: HartLab PolarFire playground
 :description: Bare-metal PolarFire with Icicle LED overlay and multi-hart GDB stub
 
-$ROOT?=.
-$bin?=@$ROOT/examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky
+# Paths are relative to the repo root (the fidelity runner and docs set cwd there).
+# `$ROOT/foo` does not expand under Renode 1.16 `@$ROOT/...`.
+$bin?=@examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky
 
 using sysbus
 mach create "icicle"
 
-machine LoadPlatformDescription @$ROOT/platforms/polarfire/playground.repl
-include @$ROOT/platforms/polarfire/playground.py
+machine LoadPlatformDescription @platforms/polarfire/playground.repl
+include @platforms/polarfire/playground.py
 
-# Do not autostart: GDB continue starts virtual time (SoftConsole-like).
-machine StartGdbServer 3333 false
+# e51 is rv64imac; U54s are rv64gc. Renode 1.16 will not default to one stub.
+# "all" matches SoftConsole: five threads in one GDB. xPack RISC-V GDB handles both.
+machine StartGdbServer 3333 false cpuCluster="all"
 
 macro reset
 """

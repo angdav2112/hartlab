@@ -96,15 +96,17 @@ Control/agent crates in this repo are **placeholders**, not spike progress
 - [ ] Ada gallery ELF — source exhibit only; needs a prebuilt RV64 binary.
 - [x] IronPython hook writes JSON lines and **fails loudly** if LEDs do not bind.
 - [x] Host ELF allowlist (PT_LOAD at `0x80000000`) + default-deny GDB filter.
-- [ ] Confirm `StateChanged` / LED JSON against a **live** Renode.
-- [ ] Host GDB: `info threads` == 5, break on `rust_main`, LED freezes on halt.
+- [x] Confirm `StateChanged` / LED JSON against a **live** Renode
+      (`docs/spikes/phase0-renode.md`).
+- [x] Host GDB: `info threads` == 5, break on `rust_main`, LED freezes on halt.
 - [ ] Same blinky inside Docker: `--network=none --read-only --cap-drop ALL
       --memory 1536m` **with Renode+GDB actually in the image**. Record RSS.
+      Script + CI job exist (`tests/fidelity/run-docker.sh`); host Mac has no
+      Docker — treat as **pending CI green**.
 - [ ] DDR RSS spike — shrink playground overlay if 2 GB mapping is real.
 
-**Exit:** a 2-minute recording for the landing page, plus a note “Renode works
-with cap-drop ALL: yes/no”. If multi-hart GDB or GPIO2 LEDs fail, **stop**
-before growing Axum.
+**Exit:** host spike recorded. **cap-drop ALL: pending CI** (no Docker on the
+dev Mac). If the docker job fails, fix that before growing Axum.
 
 ---
 

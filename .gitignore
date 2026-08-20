@@ -12,3 +12,6 @@
 .env
 .env.*
 !/.env.example
+# Host tool cache (Renode / xPack GDB). See scripts/fetch-host-tools.sh
+/.cache/
+/tools/downloads/
