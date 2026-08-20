@@ -36,12 +36,20 @@ COPY examples/rust/blinky/src /opt/hartlab/examples/rust/blinky/src
 COPY examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky \
      /opt/hartlab/examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky
 
+# Extract the portable .NET host at *build* time (writable layer).
+# Runtime is --read-only + cap-drop ALL; a 43MB extract onto tmpfs
+# kept dying at ~15MB regardless of mount size / DOTNET_BUNDLE_EXTRACT_BASE_DIR.
+ENV DOTNET_BUNDLE_EXTRACT_BASE_DIR=/opt/dotnet-extract
+RUN mkdir -p /opt/dotnet-extract \
+    && /opt/tools/renode/renode --disable-xwt --plain --version \
+    && chown -R session:session /opt/dotnet-extract
+
 ENV RENODE=/opt/tools/renode/renode \
     RISCV_GDB=/opt/tools/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-gdb \
     HARTLAB_FIDELITY_DIR=/tmp/hartlab-fidelity \
     HWSTATE_PATH=/tmp/hartlab-fidelity/hw.jsonl \
     HOME=/home/session \
-    DOTNET_BUNDLE_EXTRACT_BASE_DIR=/dotnet-extract
+    DOTNET_BUNDLE_EXTRACT_BASE_DIR=/opt/dotnet-extract
 
 WORKDIR /opt/hartlab
 USER 10000:10000
