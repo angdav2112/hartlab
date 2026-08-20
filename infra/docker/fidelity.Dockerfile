@@ -41,7 +41,7 @@ ENV RENODE=/opt/tools/renode/renode \
     HARTLAB_FIDELITY_DIR=/tmp/hartlab-fidelity \
     HWSTATE_PATH=/tmp/hartlab-fidelity/hw.jsonl \
     HOME=/home/session \
-    DOTNET_BUNDLE_EXTRACT_BASE_DIR=/tmp/dotnet-extract
+    DOTNET_BUNDLE_EXTRACT_BASE_DIR=/dotnet-extract
 
 WORKDIR /opt/hartlab
 USER 10000:10000
