@@ -6,10 +6,9 @@ set -euo pipefail
 IMAGE="${1:-hartlab-fidelity:dev}"
 
 echo "=== docker run lock-down: $IMAGE ==="
-# /tmp must be writable (JSONL + logs). noexec is fine: tools are in /opt.
-# tmpfs is root:755 unless uid is set — uid 10000 must own the mounts.
-# Renode's portable .NET host is extracted at image-build into
-# /opt/dotnet-extract (read-only at runtime). Don't re-extract onto tmpfs.
+# /tmp stays noexec (JSONL + the copied work tree). .NET/Renode JIT and
+# mmap need an exec tmp; that is /var/tmp. HOME must be writable (config).
+# .NET host itself was extracted at image-build into /opt/dotnet-extract.
 docker run --rm \
   --name "hartlab-fidelity-$$" \
   --network=none \
@@ -20,10 +19,13 @@ docker run --rm \
   --memory-swap 1536m \
   --cpus 1 \
   --pids-limit 256 \
-  --tmpfs /tmp:rw,noexec,nosuid,size=64m,uid=10000,gid=10000 \
-  --tmpfs /home/session:rw,noexec,nosuid,size=8m,uid=10000,gid=10000 \
+  --tmpfs /tmp:rw,noexec,nosuid,size=128m,uid=10000,gid=10000 \
+  --tmpfs /var/tmp:rw,nosuid,size=128m,uid=10000,gid=10000 \
+  --tmpfs /home/session:rw,nosuid,size=32m,uid=10000,gid=10000 \
   --user 10000:10000 \
   -e DOTNET_BUNDLE_EXTRACT_BASE_DIR=/opt/dotnet-extract \
+  -e TMPDIR=/var/tmp \
+  -e TMP=/var/tmp \
   "$IMAGE"
 
 echo "=== cap-drop ALL: yes (container exited 0) ==="

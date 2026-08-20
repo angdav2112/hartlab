@@ -16,11 +16,29 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+import shutil
 
-ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(os.environ.get("HARTLAB_FIDELITY_DIR", "/tmp/hartlab-fidelity"))
+# Image root is read-only under lock-down. Renode writes next to the
+# .resc/.repl (compiled scripts, analyzer cache). Copy the slice we
+# include onto the tmpfs work dir when cwd is not writable.
+_SRC_ROOT = Path(__file__).resolve().parents[2]
+
+
+def work_root() -> Path:
+    if os.access(_SRC_ROOT, os.W_OK):
+        return _SRC_ROOT
+    dest = OUT / "tree"
+    if not (dest / "platforms/polarfire/playground.resc").is_file():
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(_SRC_ROOT / "platforms", dest / "platforms", dirs_exist_ok=True)
+        shutil.copytree(_SRC_ROOT / "examples", dest / "examples", dirs_exist_ok=True)
+    return dest
+
+
+ROOT = work_root()
 ELF = ROOT / "examples/rust/blinky/target/riscv64gc-unknown-none-elf/release/blinky"
 RESC = ROOT / "platforms/polarfire/playground.resc"
-OUT = Path(os.environ.get("HARTLAB_FIDELITY_DIR", "/tmp/hartlab-fidelity"))
 HW = Path(os.environ.get("HWSTATE_PATH", str(OUT / "hw.jsonl")))
 GDB_PORT = int(os.environ.get("HARTLAB_GDB_PORT", "3333"))
 RENODE = os.environ.get("RENODE", "renode")
@@ -47,7 +65,26 @@ def wait_port(port: int, timeout: float = 30.0) -> None:
     raise RuntimeError(f"nothing listening on 127.0.0.1:{port} after {timeout}s")
 
 
+def dump_renode_log() -> None:
+    p = OUT / "renode.log"
+    if not p.is_file():
+        log("no renode.log")
+        return
+    text = p.read_text(errors="replace")
+    lines = text.splitlines()
+    hits = [
+        i
+        for i, ln in enumerate(lines)
+        if "Exception" in ln or "Could not" in ln or "error:" in ln.lower()
+    ]
+    if hits:
+        i = hits[0]
+        log("renode.log exception:\n" + "\n".join(lines[max(0, i - 2) : i + 20]))
+    log("renode.log tail:\n" + "\n".join(lines[-40:]))
+
+
 def start_renode() -> subprocess.Popen:
+
     OUT.mkdir(parents=True, exist_ok=True)
     if HW.exists():
         HW.unlink()
@@ -245,8 +282,7 @@ def main() -> int:
         return 0
     except Exception as exc:
         log(f"FAIL: {exc}")
-        if (OUT / "renode.log").is_file():
-            log((OUT / "renode.log").read_text()[-2500:])
+        dump_renode_log()
         return 1
     finally:
         stop(renode)
