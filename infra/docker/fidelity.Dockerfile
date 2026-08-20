@@ -40,7 +40,8 @@ ENV RENODE=/opt/tools/renode/renode \
     RISCV_GDB=/opt/tools/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-gdb \
     HARTLAB_FIDELITY_DIR=/tmp/hartlab-fidelity \
     HWSTATE_PATH=/tmp/hartlab-fidelity/hw.jsonl \
-    HOME=/home/session
+    HOME=/home/session \
+    DOTNET_BUNDLE_EXTRACT_BASE_DIR=/tmp/dotnet-extract
 
 WORKDIR /opt/hartlab
 USER 10000:10000
