@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl python3 libicu72 libgssapi-krb5-2 \
-        libssl3 zlib1g \
+        libssl3 zlib1g libstdc++6 libgcc-s1 libgomp1 libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --uid 10000 --create-home --home-dir /home/session session \

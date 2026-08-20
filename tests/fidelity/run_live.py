@@ -72,15 +72,7 @@ def dump_renode_log() -> None:
         return
     text = p.read_text(errors="replace")
     lines = text.splitlines()
-    hits = [
-        i
-        for i, ln in enumerate(lines)
-        if "Exception" in ln or "Could not" in ln or "error:" in ln.lower()
-    ]
-    if hits:
-        i = hits[0]
-        log("renode.log exception:\n" + "\n".join(lines[max(0, i - 2) : i + 20]))
-    log("renode.log tail:\n" + "\n".join(lines[-40:]))
+    log("renode.log:\n" + "\n".join(lines[:120]))
 
 
 def start_renode() -> subprocess.Popen:

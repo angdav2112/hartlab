@@ -6,8 +6,8 @@ set -euo pipefail
 IMAGE="${1:-hartlab-fidelity:dev}"
 
 echo "=== docker run lock-down: $IMAGE ==="
-# /tmp stays noexec (JSONL + the copied work tree). .NET/Renode JIT and
-# mmap need an exec tmp; that is /var/tmp. HOME must be writable (config).
+# tlib JIT needs an exec tmp (Renode RiscV64 ctor). /tmp is writable;
+# /var/tmp stays the exec TMPDIR. HOME is writable (config).
 # .NET host itself was extracted at image-build into /opt/dotnet-extract.
 docker run --rm \
   --name "hartlab-fidelity-$$" \
@@ -19,7 +19,7 @@ docker run --rm \
   --memory-swap 1536m \
   --cpus 1 \
   --pids-limit 256 \
-  --tmpfs /tmp:rw,noexec,nosuid,size=128m,uid=10000,gid=10000 \
+  --tmpfs /tmp:rw,nosuid,size=128m,uid=10000,gid=10000 \
   --tmpfs /var/tmp:rw,nosuid,size=128m,uid=10000,gid=10000 \
   --tmpfs /home/session:rw,nosuid,size=32m,uid=10000,gid=10000 \
   --user 10000:10000 \
